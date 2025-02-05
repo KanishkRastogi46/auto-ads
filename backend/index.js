@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
+import connectDB from './src/lib/dbConnect.js';
 
 config();
 
@@ -19,5 +20,9 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+    let isConnected = connectDB();
+    if (isConnected !== 1) console.error("DB connection failed");
+    else console.log("DB connected successfully");
+    
+    console.log(`Server is running on port ${port}`);
 });
