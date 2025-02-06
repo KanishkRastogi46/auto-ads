@@ -1,8 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import passport from 'passport';
 import { config } from 'dotenv';
 import connectDB from './src/lib/dbConnect.js';
+import authRouter from './src/routes/auth.route.js';
 
 config();
 
@@ -10,13 +13,22 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/auth', authRouter);
 
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    res.json({message: 'Home Page'});
 });
 
 app.listen(port, () => {

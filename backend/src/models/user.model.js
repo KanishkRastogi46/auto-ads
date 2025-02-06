@@ -1,13 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema({
+    user_id: {type: String, required: true, unique: true},
     email: {type: String, required: true, unique: true},
-    fullname: {
-        firstname: {type: String, required: true},
-        middlename: String,
-        lastname: String,
-    },
-    password: {type: String, required: true},
+    profile: String,
 })
 
 const user = mongoose.models.users || mongoose.model("users", userSchema);
