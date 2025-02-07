@@ -58,7 +58,7 @@ router.get('/google/callback', passport.authenticate('google', {
     access_type: "offline",
 }), function(req, res) {
     if (!req.user) return res.status(401);
-    else return res.json({message: "Login successfull", success: true, user: req.user}).redirect(`${process.env.CLIENT_URL}`);
+    else return res.redirect(`${process.env.CLIENT_URL}`);
 });
 
 router.get('/logout', function(req, res, next) {
