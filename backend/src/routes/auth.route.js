@@ -9,31 +9,33 @@ config();
 const router = Router();
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback",
-    scope: ['profile', 'email'],
-  },
-  async function(accessToken, refreshToken, profile, cb) {
-    try {
-        let exists = await User.findOne({user_id: profile.id});
-        if (!exists) {
-            await User.create({
-                user_id: profile.id,
-                email: profile.emails[0].value,
-                profile: profile.picture,
-            });
-            
-            let user = await User.findOne({user_id: profile.id});
-            return cb(null, user);
-        } else {
-            return cb(null, exists);
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/auth/google/callback",
+        scope: ['profile', 'email', "https://www.googleapis.com/auth/adwords"],
+    },
+    async function(accessToken, refreshToken, profile, cb) {
+        // console.log(profile, accessToken, refreshToken);
+        console.log(profile);
+        try {
+            let exists = await User.findOne({user_id: profile.id});
+            if (!exists) {
+                await User.create({
+                    user_id: profile.id,
+                    email: profile.emails[0].value,
+                    picture: profile.photos[0].value,
+                });
+                
+                let user = await User.findOne({user_id: profile.id});
+                return cb(null, user);
+            } else {
+                return cb(null, exists);
+            }
+        } catch (error) {
+            console.error(error);
+            return cb(error, false);
         }
-    } catch (error) {
-        console.error(error);
-        return cb(error, null);
     }
-  }
 ));
 
 // function to serialize a user/profile object into the session
@@ -50,22 +52,19 @@ router.get('/login', (req, res) => {
     res.json({message: 'Login page'});
 });
 
-router.get('/google', passport.authenticate('google', { 
-    scope: ['profile', 'email'] 
-}));
+router.get('/google', passport.authenticate('google'));
 
 router.get('/google/callback', passport.authenticate('google', {
     access_type: "offline",
-    scope: ["email", "profile"],
 }), function(req, res) {
-    if (!req.user) return res.status(401).json({message: 'Login failed', success: false});
-    else return res.status(200).json({message: 'Login successful', success: true, user: req.user});
+    if (!req.user) return res.status(401);
+    else return res.json({message: "Login successfull", success: true, user: req.user}).redirect(`${process.env.CLIENT_URL}`);
 });
 
-router.post('/logout', function(req, res, next) {
+router.get('/logout', function(req, res, next) {
     req.logout(function(err) {
         if (err) { return next(err); }
-        res.status(200).json({message: 'Logout successful', success: true});
+        res.redirect(`${process.env.CLIENT_URL}`);
     });
 })
 

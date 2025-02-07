@@ -15,9 +15,15 @@ function App() {
             <NavLink to='/chatbot' className={({isActive})=>`${isActive ? 'text-blue-300' : 'text-gray-300'} hover:text-white`}>
               Chatbot
             </NavLink>
+            <NavLink to='/create-ad' className={({isActive})=>`${isActive ? 'text-blue-300' : 'text-gray-300'} hover:text-white`}>
+              Create Ad
+            </NavLink>
             <NavLink to='/tracking' className={({isActive})=>`${isActive ? 'text-blue-300' : 'text-gray-300'} hover:text-white`}>
               Tracking
             </NavLink>
+            <button onClick={()=>{window.location = `${import.meta.env.VITE_API_URL}/auth/logout`}} className="bg-red-600 rounded-lg p-1 font-semibold">
+              Logout
+            </button>
           </div>
         </nav>
         <div className='container mx-auto max-h-screen h-[90vh] bg-gray-950 flex flex-col justify-center items-center'>
@@ -37,9 +43,9 @@ function App() {
                 <li className='mb-2'>User-friendly interface with minimal input required</li>
                 <li className='mb-2'>Track and manage your ads in one place</li>
               </ul>
-              <NavLink className='m-8 px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300'>
+              <button className='mt-6 px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300'>
                 Get Started
-              </NavLink>
+              </button>
             </div>
           </div>
         </div>
