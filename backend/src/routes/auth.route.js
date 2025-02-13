@@ -13,10 +13,12 @@ passport.use(new GoogleStrategy({
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: "http://localhost:3000/auth/google/callback",
         scope: ['profile', 'email', "https://www.googleapis.com/auth/adwords"],
+        // access_type: 'offline',
     },
     async function(accessToken, refreshToken, profile, cb) {
-        // console.log(profile, accessToken, refreshToken);
         console.log(profile);
+        console.log(accessToken);
+        console.log(refreshToken);
         try {
             let exists = await User.findOne({user_id: profile.id});
             if (!exists) {
@@ -24,6 +26,8 @@ passport.use(new GoogleStrategy({
                     user_id: profile.id,
                     email: profile.emails[0].value,
                     picture: profile.photos[0].value,
+                    accesstoken: accessToken,
+                    refreshtoken: refreshToken,
                 });
                 
                 let user = await User.findOne({user_id: profile.id});
@@ -52,11 +56,9 @@ router.get('/login', (req, res) => {
     res.json({message: 'Login page'});
 });
 
-router.get('/google', passport.authenticate('google'));
+router.get('/google', passport.authenticate('google', {accessType: 'offline', prompt: 'consent'}));
 
-router.get('/google/callback', passport.authenticate('google', {
-    access_type: "offline",
-}), function(req, res) {
+router.get('/google/callback', passport.authenticate('google'), function(req, res) {
     if (!req.user) return res.status(401);
     else return res.redirect(`${process.env.CLIENT_URL}`);
 });

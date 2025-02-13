@@ -12,33 +12,37 @@ const client = new GoogleAdsApi({
     developer_token: process.env.GOOGLE_ADS_DEVELOPER_TOKEN
 });
 
-const customer = client.Customer({
-    customer_id: process.env.GOOGLE_ADS_CUSTOMER_ID,
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-});
 
 router.post('/create-ad', async (req, res) => {
-    const { campaignId, adGroupId, headline, description, finalUrl } = req.body;
+    // const { campaignId, adGroupId, headline, description, finalUrl } = req.body;
 
-    if (!campaignId || !adGroupId || !headline || !description || !finalUrl) {
-        return res.status(400).json({ error: "All fields (campaignId, adGroupId, headline, description, finalUrl) are required" });
-    }
+    // if (!campaignId || !adGroupId || !headline || !description || !finalUrl) {
+    //     return res.status(400).json({ error: "All fields (campaignId, adGroupId, headline, description, finalUrl) are required" });
+    // }
+
+    const customer = client.Customer({
+        customer_id: process.env.GOOGLE_ADS_CUSTOMER_ID,
+        refresh_token: req.body.refreshtoken
+    });
 
     try {
-        const adResponse = await customer.adGroups.create({
-            campaign_id: campaignId,
-            ad_group_id: adGroupId,
-            ad: {
-                expanded_text_ad: {
-                    headline_part1: headline,
-                    headline_part2: "Your perfect solution!",
-                    description: description,
-                },
-                final_urls: [finalUrl]
-            }
+        await customer.campaigns.create({
+        
         });
+        // const adResponse = await customer.adGroups.create({
+        //     campaign_id: campaignId,
+        //     ad_group_id: adGroupId,
+        //     ad: {
+        //         expanded_text_ad: {
+        //             headline_part1: headline,
+        //             headline_part2: "Your perfect solution!",
+        //             description: description,
+        //         },
+        //         final_urls: [finalUrl]
+        //     }
+        // });
 
-        res.json({ message: "Ad successfully created!", adId: adResponse.id });
+        res.json({ message: "client successfully created!", adId: customer });
     } catch (error) {
         console.error("Error creating Google Ads:", error);
         res.status(500).json({ error: "Failed to create ad on Google Ads API" });
